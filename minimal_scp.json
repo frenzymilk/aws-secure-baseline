@@ -1,0 +1,129 @@
+{
+    "Version":"2012-10-17",
+    "Statement": [
+        //prevent leaving the organization
+        {
+            "Sid": "PreventLeavingOrg",
+            "Effect": "Deny", 
+            "Action":"organizations:LeaveOrganization",
+            "Resource": "*" 
+        },
+        //block any actions made by root
+        {
+            "Sid": "BlockRoot",
+            "Effect": "Deny",
+            "Action": "*",
+            "Resource": "*",
+            "Condition": {
+                "StringLike": {
+                    "aws:PrincipalArn": [
+                        "arn:aws:iam::*:root"
+                    ]
+                }
+            }
+        }
+        //block any actions outside a specific region
+        {
+            "Sid": "LimitRegions",
+            "Effect": "Deny",
+            "Action": "*",
+            "Resource": "*",
+            "Condition": {
+                "StringNotEquals": {
+                    "aws:RequestedRegion": ["us-east-1","us-east-2","us-west-1", "us-west-2", "eu-west-3"]
+                }
+            }
+        },
+        // prevent disabling security services unless it is the delegated administrator
+        // CloudTrail //
+        {
+            "Sid": "PreventDisablingCloudTrail", 
+            "Effect": "Deny", 
+            "Action": [ 
+                "cloudtrail:DeleteTrail", 
+                "cloudtrail:PutEventSelectors", 
+                "cloudtrail:StopLogging", 
+                "cloudtrail:UpdateTrail" 
+            ], 
+            "Resource": ["arn:aws:cloudtrail:*:*:trail/*"], 
+            "Condition": { 
+                "ArnNotLike": { 
+                    "aws:PrincipalARN":"arn:aws:iam::[DELEGATEDSECADMIN]:role/*" 
+                } 
+            } 
+        },
+        // GuardDuty //
+        {
+            "Sid": "PreventDisablingGuardDuty", 
+            "Effect": "Deny", 
+            "Action": [ 
+                "guardduty:ArchiveFindings",  
+                "guardduty:CreateFilter",   
+                "guardduty:CreateIPSet", 
+                "guardduty:DeleteDetector",  
+                "guardduty:DeleteFilter", 
+                "guardduty:DeleteIPSet", 
+                "guardduty:DeleteThreatIntelSet", 
+                "guardduty:DisassociateFromMasterAccount",  
+                "guardduty:DisassociateFromAdministratorAccount",  
+                "guardduty:UpdateDetector",  
+                "guardduty:UpdateFilter",  
+                "guardduty:UpdateIPSet",  
+                "guardduty:UpdateThreatIntelSet"  
+            ], 
+            "Resource": ["*"], 
+            "Condition": { 
+                "ArnNotLike": { 
+                    "aws:PrincipalARN":"arn:aws:iam::[DELEGATEDSECADMIN]:role/*" 
+                } 
+            } 
+        },  
+        // CloudWatch //
+        {
+            "Sid": "PreventDisablingCloudWatch", 
+            "Effect": "Deny", 
+            "Action": [ 
+                "cloudwatch:Delete*",
+                "cloudwatch:Put*", 
+            ], 
+            "Resource": ["*"], 
+            "Condition": { 
+                "ArnNotLike": { 
+                    "aws:PrincipalARN":"arn:aws:iam::[DELEGATEDSECADMIN]:role/*" 
+                } 
+            } 
+        },
+        // AWS Config //
+        {
+            "Sid": "PreventDisablingCloudWatch", 
+            "Effect": "Deny", 
+            "Action": [ 
+                "config:Delete*",
+                "config:Put*", 
+            ], 
+            "Resource": ["*"], 
+            "Condition": { 
+                "ArnNotLike": { 
+                    "aws:PrincipalARN":"arn:aws:iam::[DELEGATEDSECADMIN]:role/*" 
+                } 
+            } 
+        },
+
+        // SecurityHub //
+        {
+            "Sid": "PreventDisablingCloudWatch", 
+            "Effect": "Deny", 
+            "Action": [ 
+                "securityhub:Delete*",
+                "securityhub:Put*", 
+            ], 
+            "Resource": ["*"], 
+            "Condition": { 
+                "ArnNotLike": { 
+                    "aws:PrincipalARN":"arn:aws:iam::[DELEGATEDSECADMIN]:role/*" 
+                } 
+            } 
+        }
+
+    ]
+}
