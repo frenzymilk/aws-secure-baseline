@@ -44,7 +44,7 @@ Turn this on early as it makes management easier as you scale.
 - Enable **all features** in AWS Organizations (not just consolidated billing).
 - Centrally manage root access for member accounts.
 - Design your OU structure around workloads that share constraints and requirements: e.g. Financial, Security, Dev, Prod...
-- Design your SCPs and RCPs as guardrails adapted to your environment. Start from a minimal baseline set ([example](#) <!-- add link -->).
+- Design your SCPs and RCPs as guardrails adapted to your environment. Start from a minimal baseline set ([example here](https://github.com/frenzymilk/aws-secure-baseline/blob/main/minimal_scp.json) <!-- add link -->).
 
 ---
 
